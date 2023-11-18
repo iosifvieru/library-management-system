@@ -11,7 +11,7 @@
 </head>
 <body>
     <h1>Add Library Item</h1>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('addBook') }}">
         <label>Select Item Type:</label>
         <select name="item_type" id="item_type">
             <option value="book">Book</option>
@@ -29,7 +29,11 @@
         <br>
 
         <label for="noPages">Number of pages:</label>
-        <input type="text" name="noPages" required>
+        <input type="number" name="noPages" required>
+        <br>
+
+        <label for="date">Year:</label>
+        <input type="number" name="date" required>
         <br>
         <button type="submit">Add Item</button>
     </form>

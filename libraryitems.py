@@ -34,6 +34,7 @@ class Book(LibraryItem):
         return string
 
     def updateStatus(self):
+        # to do: de modificat self.borrowedBy
         self.status = not self.status
 
     def __str__(self):
