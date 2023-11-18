@@ -17,6 +17,7 @@
             <th>Publish Date</th>
             <th>Borrowed By</th>
             <th>No. Pages</th>
+            <th>Action</th>
         </tr>
         {% for book in books %}
             <tr>
@@ -25,16 +26,27 @@
                 <td>{{book.name}}</td>
                 <td>{{book.status}}</td>
                 <td>{{book.publishDate.year}}</td>
+                <<td>{{book.noPages}}</td>
                 <td>
                     {% if book.borrowedBy == -1 %}
                         Free
+                        <td>
+                            <button onclick="borrowBook('{{ book.id }}', '{{ book.name }}', '{{ book.author }}')">Borrow</button>
+                        </td>
                     {% else %}
                         Borrowed by {{book.borrowedBy}}
                     {% endif %}
                 </td>
-                <<td>{{book.noPages}}</td>
             </tr>
         {% endfor %}
     </table>
+
+    <script>
+        function borrowBook(bookId, bookName, author) {
+            // You can perform AJAX request or call a function to get detailed information
+            // For simplicity, let's just show an alert with the book information
+            alert(`Borrowing ${bookName} by ${author} (ID: ${bookId})`);
+        }
+    </script>
 </body>
 </html>

@@ -17,9 +17,10 @@ def closeConnection(db):
 def query(sql):
     db = getDB()
     cursor = db.cursor()
+
     result = cursor.execute(sql)
     result = result.fetchall()
+    
     db.commit()
     closeConnection(db)
-
     return result

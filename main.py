@@ -7,26 +7,7 @@ import database
 app = Flask(__name__)
 
 library = l.Library()
-
-books = database.query("select * from books")
-#print(books)
-
-
-for book in books:
-    id = book[0]
-    author = book[1]
-    title = book[2]
-    status = book[3]
-    publishDate = book[4]
-    # 
-    parsed_date = datetime.datetime.strptime(publishDate, '%Y-%m-%d %H:%M:%S')
-    print(parsed_date)
-
-    borrowedBy = book[5]
-    noPages = book[6]
-    tempBook = itemFactory.ItemFactory.createItem("book", id, author, title, status, parsed_date, borrowedBy, noPages)
-    l.LibraryController.addBook(library, tempBook)
-
+l.LibraryController.updateBooks(library)
 
 @app.route('/')
 def mainPage():
@@ -44,22 +25,35 @@ def addBook():
         date = datetime.datetime(day=1, month=11, year=int(request.form.get('date')))
         noPages = int(request.form.get('noPages'))
         #tempBook = libraryitems.Book(4, author, title, False, datetime.datetime(day=1, month=11, year=int(date)), -1, noPages)
-        tempItem = itemFactory.ItemFactory.createItem(item_type, id, author, title, False, date, -1, noPages)
-        if tempItem is None:
-            abort(404)
+        #tempItem = itemFactory.ItemFactory.createItem(item_type, id, author, title, False, date, -1, noPages)
+        #if tempItem is None:
+        #    abort(404)
         
-        l.LibraryController.addBook(library, tempItem)
+        #l.LibraryController.addBook(library, tempItem)
 
         sql = f"""
             INSERT INTO books (author, title, status, publishDate, borrowedBy, noPages)
             VALUES ('{author}', '{title}', '{False}', '{date}', '{-1}', {noPages});
         """
-        
         database.query(sql)
 
-        # to do: de adaugat in baza de date.
+        l.LibraryController.updateBooks(library)
         return redirect(url_for('addBook'))
 
+
+
+@app.route('/sql', methods=['POST', 'GET'])
+def sql_admin():
+    if request.method == 'GET':
+        return render_template('sql.html')
+    else:
+        sql = request.form.get('sqlInput')
+        
+        result = database.query(sql)
+        print(result)
+        
+        return redirect('sql')
+    #return render_template('sql.html')
 
 @app.errorhandler(404)
 def page_not_found(error):
