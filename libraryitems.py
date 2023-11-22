@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import datetime
+import datetime, database
 
 
 class LibraryItem(ABC):
@@ -33,9 +33,19 @@ class Book(LibraryItem):
 
         return string
 
-    def updateStatus(self):
+    def updateStatus(self, borrowedBy: int, bookID: int):
         # to do: de modificat self.borrowedBy
-        self.status = not self.status
+        #if borrowedBy >= -1:
+        self.borrowedBy = borrowedBy
+            # qur
+        
+        if self.status == True:
+            self.status = False
+        else:
+            self.status = True
+
+        sql = f'UPDATE books SET borrowedBy = {self.borrowedBy}, status = {self.status} WHERE id = {bookID}'
+        database.query(sql)
 
     def __str__(self):
         return self.display()

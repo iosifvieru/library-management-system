@@ -27,6 +27,7 @@ class LibraryController:
     def updateBooks(library: Library):
         books = database.query(f"select * from books WHERE ID >= {LibraryController.__last_id}")
         for book in books:
+            print(book[0])
             id = book[0]
             LibraryController.__last_id = id
             
@@ -46,3 +47,6 @@ class LibraryController:
             
             if id not in existing_books:
                 LibraryController.addBook(library, tempBook)
+
+    def getBook(library: Library, id: int)-> libraryitems.Book:
+        return library.getBooks()[id]

@@ -41,12 +41,32 @@
         {% endfor %}
     </table>
 
-    <script>
-        function borrowBook(bookId, bookName, author) {
-            // You can perform AJAX request or call a function to get detailed information
-            // For simplicity, let's just show an alert with the book information
-            alert(`Borrowing ${bookName} by ${author} (ID: ${bookId})`);
-        }
+<script>
+    function borrowBook(bookId, bookName, author) {
+        // You can perform AJAX request or call a function to get detailed information
+        // For simplicity, let's use the fetch API to send data to the Flask server
+        fetch('/borrow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bookId: bookId,
+                bookName: bookName,
+                author: author,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
     </script>
 </body>
 </html>

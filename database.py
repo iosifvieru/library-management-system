@@ -1,7 +1,8 @@
 
 import sqlite3
 
-__PATH = 'database\library.db'
+__PATH = 'database/library.db'
+#__PATH = 'database\library.db'
 
 
 def getDB():

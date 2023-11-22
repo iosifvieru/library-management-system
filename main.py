@@ -9,7 +9,8 @@ app = Flask(__name__)
 library = l.Library()
 l.LibraryController.updateBooks(library)
 
-@app.route('/')
+
+@app.route('/') 
 def mainPage():
     return render_template('index.html', books=library.getBooks())
 
@@ -41,6 +42,25 @@ def addBook():
         return redirect(url_for('addBook'))
 
 
+@app.route('/borrow', methods=['POST'])
+def borrow_book():
+    data = request.get_json()
+    book_id = data.get('bookId')
+    book_name = data.get('bookName')
+    author = data.get('author')
+
+
+    print(data)
+    
+    book = l.LibraryController.getBook(library, int(book_id)-1)
+    print(book)
+
+    book.updateStatus(10, book.id)
+
+
+    
+    return redirect('/')
+
 
 @app.route('/sql', methods=['POST', 'GET'])
 def sql_admin():
@@ -54,6 +74,9 @@ def sql_admin():
         
         return redirect('sql')
     #return render_template('sql.html')
+
+
+
 
 @app.errorhandler(404)
 def page_not_found(error):
