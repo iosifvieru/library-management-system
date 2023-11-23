@@ -38,14 +38,21 @@ class Book(LibraryItem):
         #if borrowedBy >= -1:
         self.borrowedBy = borrowedBy
             # qur
-        
-        if self.status == True:
-            self.status = False
-        else:
+        sql = None
+        if self.borrowedBy >= -1:
             self.status = True
+            sql = f'UPDATE books SET borrowedBy = {self.borrowedBy}, status = True WHERE id = {bookID}'
+        else:
+            self.status = False
+            sql = f'UPDATE books SET borrowedBy = {self.borrowedBy}, status = False WHERE id = {bookID}'
 
-        sql = f'UPDATE books SET borrowedBy = {self.borrowedBy}, status = {self.status} WHERE id = {bookID}'
         database.query(sql)
 
     def __str__(self):
         return self.display()
+    
+    def getId(self):
+        return self.id
+    
+    def getBorrowedBy(self):
+        return self.borrowedBy

@@ -75,3 +75,17 @@ class Student(BaseUser):
 
     def __str__(self):
         return f"{super().__str__()}, university: {self.univeristy}, specialization: {self.specialization}, year of Study: {self.year}"
+    
+
+class UserList:
+    def __init__(self) -> None:
+        self.items = list()
+
+    def removeUser(self, id):
+        self.items.pop(id)
+
+    def updateList(self, user: User):
+        self.items.append(user)
+    
+    def getUser(self, id: int):
+        return self.items[id]

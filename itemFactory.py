@@ -5,11 +5,4 @@ class ItemFactory:
         if type == "book":
             return libraryitems.Book(id, author, title, status, publishDate, borrowedBy, noPages)
 
-    
-    def createUser(type: str, id: int, firstName:str, lastName: str, city: str, 
-                   phoneNo: str, email:str, birthDate: datetime, borrowedBooks: list):
-        
-        if type == "user":
-            return user.BaseUser(id, firstName, lastName, city, phoneNo, email, birthDate, borrowedBooks)
-        
     # future developments
