@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Profile</h1>
+    {% for user_data in user %}
+    <p> {{user_data}}</p>
+    {% endfor %}
+
+    <p>BorrowedBooks: </p>
+    <table>
+        <tr>
+            <th>Author</th>
+            <th>Book Title</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+
+            <td>{{book.author}}</td>
+            <td>{{book.name}}</td>
+            <td><button type="submit" onclick="returnBook('{{ book.id }}', '{{ book.name }}', '{{ book.author }}')">Return</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+<script>
+    function returnBook(bookId, bookName, author) {
+        // You can perform AJAX request or call a function to get detailed information
+        // For simplicity, let's use the fetch API to send data to the Flask server
+        fetch('/return', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bookId: bookId,
+                bookName: bookName,
+                author: author,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server if needed
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+
+</html>
