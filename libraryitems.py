@@ -51,6 +51,9 @@ class Book(LibraryItem):
     def __str__(self):
         return self.display()
     
+    def __repr__(self) -> str:
+        return self.display()
+    
     def getId(self):
         return self.id
     

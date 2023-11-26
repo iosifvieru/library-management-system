@@ -40,7 +40,10 @@
             </tr>
         {% endfor %}
     </table>
+    <br>
+    <a href="{{ url_for('profile') }}">Profile</a>
 
+    <a href="{{ url_for('logout')}}">Logout</a>
 <script>
     function borrowBook(bookId, bookName, author) {
         // You can perform AJAX request or call a function to get detailed information
@@ -64,6 +67,7 @@
         .catch(error => {
             console.error('Error:', error);
         });
+        location.reload(true);
     }
 </script>
 </body>

@@ -10,11 +10,7 @@ class User(ABC):
     @abstractmethod
     def returnBook(self):
         pass
-
-    @abstractmethod
-    def searchBook(self):
-        pass
-
+ 
     @abstractmethod
     def displayCurrentBooks(self):
         pass
@@ -23,7 +19,7 @@ class User(ABC):
 class BaseUser(User):
     def __init__(self, id: int, firstName: str,
                  lastName: str, city: str,
-                 phoneNo: str, email: str, birthDate: datetime, borrowedBooks: list):
+                 phoneNo: str, email: str, birthDate: datetime, borrowedBooks: list, adminLevel: int):
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -32,18 +28,20 @@ class BaseUser(User):
         self.email = email
         self.birthDate = birthDate
         self.borrowBooks = borrowedBooks
+        self.adminLevel = adminLevel
 
-    def borrowBook(self):
-        print("test")
+    def borrowBook(self, book):
+        self.borrowBooks.append(book)
 
-    def returnBook(self):
-        print("test")
-
-    def searchBook(self):
-        print("test")
+    def returnBook(self, book):
+        id = self.borrowBooks.index(book)
+        self.borrowBooks.pop(id)
 
     def displayCurrentBooks(self):
-        print("test")
+        return self.borrowBooks
+
+    def getID(self):
+        return self.id
 
     def __str__(self):
         return f"id: {self.id}, firstName: {self.firstName}, lastName: {self.lastName}, " \
@@ -54,24 +52,21 @@ class BaseUser(User):
 class Student(BaseUser):
     def __init__(self, id: int, firstName: str,
                  lastName: str, city: str,
-                 phoneNo: str, email: str, birthDate: datetime, borrowedBooks: list,
+                 phoneNo: str, email: str, birthDate: datetime, borrowedBooks: list, adminLevel: int,
                  university: str, specialization: str, year: int):
-        super().__init__(id, firstName, lastName, city, phoneNo, email, birthDate, borrowedBooks)
+        super().__init__(id, firstName, lastName, city, phoneNo, email, birthDate, borrowedBooks, adminLevel)
         self.univeristy = university
         self.specialization = specialization
         self.year = year
 
     def borrowBook(self):
-        print("test")
+        super().borrowBook()
 
     def returnBook(self):
-        print("test")
-
-    def searchBook(self):
-        print("test")
+        super().returnBook()
 
     def displayCurrentBooks(self):
-        print("test")
+        super().displayCurrentBooks()
 
     def __str__(self):
         return f"{super().__str__()}, university: {self.univeristy}, specialization: {self.specialization}, year of Study: {self.year}"
@@ -82,10 +77,22 @@ class UserList:
         self.items = list()
 
     def removeUser(self, id):
-        self.items.pop(id)
+        tempUser = self.getUser(id)
+        user_id = self.items.index(tempUser)
+        # print(user_id)
+        self.items.pop(user_id)
+        
 
-    def updateList(self, user: User):
+    def addUser(self, user: User):
         self.items.append(user)
     
     def getUser(self, id: int):
-        return self.items[id]
+        for user in self.items:
+            if user.getID() == id:
+                return user
+        
+        return None
+    
+    def __str__(self):
+        user_strings = [str(user) for user in self.items]
+        return "\n".join(user_strings)
