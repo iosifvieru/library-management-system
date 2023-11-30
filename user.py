@@ -48,6 +48,8 @@ class BaseUser(User):
                f"city: {self.city}, phoneNo: {self.phoneNo}, email: {self.email}, " \
                f"birthDate: {self.birthDate}, borrowedBooks: {self.borrowBooks}"
 
+    def getAdminLevel(self):
+        return self.adminLevel
 
 class Student(BaseUser):
     def __init__(self, id: int, firstName: str,
@@ -71,6 +73,8 @@ class Student(BaseUser):
     def __str__(self):
         return f"{super().__str__()}, university: {self.univeristy}, specialization: {self.specialization}, year of Study: {self.year}"
     
+    def getAdminLevel(self):
+        super().getAdminLevel()
 
 class UserList:
     def __init__(self) -> None:

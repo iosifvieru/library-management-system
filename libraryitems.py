@@ -48,6 +48,30 @@ class Book(LibraryItem):
 
         database.query(sql)
 
+    def refresh(self):
+
+        sql = f"""
+            SELECT * FROM books where id = '{self.id}'
+        """
+        result = database.query(sql)
+        result = result[0]
+
+        print('from db: ')
+        print(result)
+
+        self.id = result[0]
+        self.author = result[1]
+        self.name = result[2]
+        self.status = result[3]
+        self.borrowedBy = result[5]
+        self.noPages = result[6]
+
+        # TO DO: 
+        #date = result[4]
+        #parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        #if self.publishDate != parsed_date:
+        #    self.publishDate = parsed_date
+
     def __str__(self):
         return self.display()
     
@@ -59,3 +83,15 @@ class Book(LibraryItem):
     
     def getBorrowedBy(self):
         return self.borrowedBy
+    
+    def getAuthor(self):
+        return self.author
+    
+    def getTitle(self):
+        return self.name
+    
+    def setTitle(self, title):
+        self.name = title
+    
+    def setAuthor(self, author):
+        self.author = author

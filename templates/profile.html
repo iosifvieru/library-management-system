@@ -5,11 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Profile</h1>
     <p> {{ user.id }}</p> <br>
-    <p> {{ user.username }}</p>
+    <p> {{ user.firstName }} {{ user.lastName }} </p>
+    <p> {{ user.city }} </p>
+    <p> {{ user.phoneNo }}</p>
+    <p> {{ user.email }} </p>
+    <p> {{ user.birthDate.day }}-{{ user.birthDate.month }}-{{ user.birthDate.year }}</p>
     {% if books %}
         <p>BorrowedBooks: </p>
         <table>
@@ -24,14 +29,12 @@
                 <td><button type="submit" onclick="returnBook('{{ book.id }}', '{{ book.name }}', '{{ book.author }}')">Return</button></td>
             </tr>
             {% endfor %}
-        {%endif%}
-    </table>
+    {%endif%}
+        </table>
 </body>
 
 <script>
     function returnBook(bookId, bookName, author) {
-        // You can perform AJAX request or call a function to get detailed information
-        // For simplicity, let's use the fetch API to send data to the Flask server
         fetch('/return', {
             method: 'POST',
             headers: {
@@ -51,7 +54,7 @@
         .catch(error => {
             console.error('Error:', error);
         });
-
+        location.reload(true);
         location.reload(true);
     }
 </script>

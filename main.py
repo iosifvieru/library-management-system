@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, abort, fla
 import libraryitems, itemFactory
 import library as l
 import database, random
-import hashlib, user
+import hashlib, user, string
 
 app = Flask(__name__)
 app.secret_key = 'pione4'
@@ -14,26 +14,35 @@ l.LibraryController.updateBooks(library)
 
 listOfUsers = user.UserList()
 
-
 sql = """
         DELETE from session WHERE id >= 1
     """
 database.query(sql)
 
-
 # MAIN PAGE
-@app.route('/') 
+@app.route('/', methods=['GET','POST']) 
 def mainPage():
     if not is_logged_in():
         return redirect('login')
     
+    search = request.form.get('search_input')
+    # print(search)
+
+    books = library.getBooks()
+
+    if search:
+        tempList = list()
+        for book in books:
+            #if book.getTitle().lower() == search.lower() or book.getAuthor().lower() == search.lower():
+            if str(search.lower()) in str(book.getTitle().lower()) or str(search.lower()) in str(book.getAuthor().lower()):
+                tempList.append(book)
+
+        books = tempList
+            
     data = {
-        'books': library.getBooks(),
-        #'adminLevel': session['adminLevel']
+        'books': books,
+        'adminLevel': session['adminLevel']
     }
-
-    print(listOfUsers)
-
     return render_template('index.html', **data)
 
 # ADMIN
@@ -62,6 +71,51 @@ def addBook():
 
         l.LibraryController.updateBooks(library)
         return redirect(url_for('addBook'))
+
+
+@app.route('/editBook', methods=['POST'])
+def editBook():
+    if not is_logged_in():
+        return redirect('login')
+    
+    if request.method == 'POST':
+        book_id = request.form.get('bookId')
+
+        book_id = int(book_id)-1
+
+        book = l.LibraryController.getBook(library, book_id)
+        print(book)
+
+        title = request.form.get('bookTitle')
+        author = request.form.get('bookAuthor')
+        publishDate = request.form.get('publishDate')
+        borrowedBy = request.form.get('borrowedBy')
+        noPages = request.form.get('noPages')
+
+        sql = f"""
+            UPDATE books SET author='{author}', title='{title}', publishDate='{publishDate}',
+                            borrowedBy='{borrowedBy}', noPages='{noPages}' WHERE id = '{book.getId()}'
+        """
+        database.query(sql)
+        
+        # TO DO -> refresh object.
+        book.refresh()
+
+    return redirect('/')
+
+@app.route('/edit', methods = ['POST', 'GET'])
+def edit():
+    if not is_logged_in():
+        return redirect('login')
+    
+    if request.method == 'GET':
+        book_id = int(request.args.get('bookId')) - 1
+        book = l.LibraryController.getBook(library, book_id)
+
+        data = {
+            'book': book
+        }
+        return render_template('editBook.html', **data)
 
 
 @app.route('/sql', methods=['POST', 'GET'])
@@ -96,7 +150,7 @@ def register():
         phoneNo = request.form.get('phoneNo')
         date = request.form.get('birthDate')
 
-        parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d')
+        parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 
         encoded_password = encode_string(password)
         sql = f"""
@@ -121,7 +175,6 @@ def login():
     
     # codul de mai jos se executa daca request method este POST
     # adica logica de login propriu-zisa.
-
     username = request.form.get('username')
     password = request.form.get('password')
     encoded_password = encode_string(password)
@@ -140,32 +193,6 @@ def login():
     # daca parola != de parola din db -> redirect catre login.
     if user[2] != encoded_password:
         return redirect('login')
-    
-    
-    session['user_id'] = user[0] # ID din Database.
-    
-    # generare cod session_id pt. validarea login-ului
-    session_id = random.randint(1, 1000000)
-    
-    print(session_id)
-
-    session['session_id'] = session_id
-
-    if not getSessionID(user[0]):
-        sql = f"""
-            INSERT INTO session (id, session_id) VALUES ('{int(session['user_id'])}', '{int(session['session_id'])}')
-        """
-        database.query(sql)
-    else:
-        sql = f"""
-            UPDATE session SET session_id = '{session_id}' WHERE id = '{user[0]}'
-        """
-        database.query(sql)
-
-    # print(getSessionID(user[0]))
-
-    # debug
-    print(user)
 
     id = user[0]
     username = user[1]
@@ -179,6 +206,25 @@ def login():
     specialization = user[10]
     year = user[11]
     adminLevel = user[12]
+
+    #session data
+    session['user_id'] = user[0] # ID din Database.
+
+    # generare cod session_id pt. validarea login-ului
+    session_id = random.randint(1, 1000000)
+    session['session_id'] = session_id
+    session['adminLevel'] = adminLevel
+    
+    if not getSessionID(user[0]):
+        sql = f"""
+            INSERT INTO session (id, session_id) VALUES ('{int(session['user_id'])}', '{int(session['session_id'])}')
+        """
+        database.query(sql)
+    else:
+        sql = f"""
+            UPDATE session SET session_id = '{session_id}' WHERE id = '{user[0]}'
+        """
+        database.query(sql)
 
     if birthDate:
         parsed_date = datetime.datetime.strptime(birthDate, '%Y-%m-%d %H:%M:%S')
@@ -301,6 +347,9 @@ def is_logged_in():
     return 'user_id' in session
 
 
+# functie ce se apeleaza inainte de orice request http
+# verifica daca sesiunea este valida.
+# citeste din DB session_id si il compara cu session['session_id']
 @app.before_request
 def before_request():
     if 'user_id' in session:
