@@ -12,6 +12,12 @@ class LibraryItem(ABC):
         pass
 
 
+# 
+# status si borrowedBy -> deprecated.
+# au ramas in scriere doar pt. ca trb. rescris aproape tot libraryitems.py pt a le elimina.
+# momentan status si borrowedby impreuna cu procedurile updateStatus si display nu sunt folosite.
+#
+
 class Book(LibraryItem):
     def __init__(self, id: int, author: str, name: str,
                  status: bool, publishDate: datetime, borrowedBy: int, noPages: int):

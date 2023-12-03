@@ -73,25 +73,8 @@
     </table>
     <br>
 <script>
-    function borrowBook(bookId, bookName, author) {
-        location.reload(true)
-        fetch('/borrow', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                bookId: bookId,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    function borrowBook(bookId) {
+        window.location.href = '/borrow?bookId=' + bookId;
     }
 
     function editBook(bookId) {
@@ -99,7 +82,7 @@
     }
 
     function deleteBook(bookId){
-        window.location.href = '/delete?bookId= ' + bookId;
+        window.location.href = '/delete?bookId=' + bookId;
     }
 
     document.getElementById('searchInput').addEventListener('keypress', function(e) {

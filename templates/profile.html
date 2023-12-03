@@ -26,7 +26,7 @@
             <tr>
                 <td>{{book.author}}</td>
                 <td>{{book.name}}</td>
-                <td><button type="submit" onclick="returnBook('{{ book.id }}', '{{ book.name }}', '{{ book.author }}')">Return</button></td>
+                <td><button type="submit" onclick="returnBook('{{ book.id }}')">Return</button></td>
             </tr>
             {% endfor %}
     {%endif%}
@@ -34,28 +34,10 @@
 </body>
 
 <script>
-    function returnBook(bookId, bookName, author) {
-        fetch('/return', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                bookId: bookId,
-                bookName: bookName,
-                author: author,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response from the server if needed
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-        location.reload(true)
+       function returnBook(bookId) {
+        window.location.href = '/return?bookId=' + bookId;
     }
+
 </script>
 
 

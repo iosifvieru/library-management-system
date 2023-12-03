@@ -29,5 +29,6 @@ class Transaction:
             DELETE FROM borrowedBooks WHERE user_id = '{user.getID()}' and book_id = '{book.getId()}'
         """
         database.query(sql)
+        
         bookQuantity = book.getQuantity()
         book.updateQuantity(bookQuantity + 1)
