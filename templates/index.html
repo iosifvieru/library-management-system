@@ -21,17 +21,22 @@
     </form>
     
     <a href="{{ url_for('profile') }}">Profile</a>
-    <a href="{{ url_for('logout')}}">Logout</a>
     
+    {% if adminLevel %}
+    <a href="{{ url_for('addBook')}}">Add book</a>
+    {% endif %}
+    
+    <a href="{{ url_for('logout')}}">Logout</a>
+
+
     <table>
         <tr>
-            
             <!-- <th>ID</th> -->
             <th>Author</th>
             <th>Book Name</th>
             <th>Publish Date</th>
             <th>Number of pages</th>
-            <th>Borrowed By</th>
+            <th>Quantity</th>
             <th>Action</th>
         </tr>
         {% for book in books %}
@@ -42,13 +47,13 @@
                 <td>{{book.publishDate.year}}</td>
                 <td>{{book.noPages}}</td>
                 <td>
-                    {% if book.borrowedBy == -1 %}
-                        Free
+                    {% if book.quantity > 0 %}
+                        {{book.quantity}}
                         <td>
-                            <button onclick="borrowBook('{{ book.id }}', '{{ book.name }}', '{{ book.author }}')">Borrow</button>
+                            <button onclick="borrowBook('{{ book.id }}')">Borrow</button>
                         </td>
                     {% else %}
-                        {{book.borrowedBy}}
+                        {{book.quantity}}
                         <td>
                             <button disabled>Busy</button>
                         </td>
@@ -58,6 +63,10 @@
                 <td>
                     <button onclick="editBook('{{ book.id }}')">Edit</button>
                 </td>
+
+                <td>
+                    <button onclick="deleteBook('{{ book.id }}')">Delete</button>
+                </td>
                 {% endif %}
             </tr>
         {% endfor %}
@@ -65,6 +74,7 @@
     <br>
 <script>
     function borrowBook(bookId, bookName, author) {
+        location.reload(true)
         fetch('/borrow', {
             method: 'POST',
             headers: {
@@ -72,23 +82,24 @@
             },
             body: JSON.stringify({
                 bookId: bookId,
-                bookName: bookName,
-                author: author,
             }),
         })
         .then(response => response.json())
         .then(data => {
-            // Handle the response from the server if needed
+            
             console.log(data);
         })
         .catch(error => {
             console.error('Error:', error);
         });
-        location.reload(true);
     }
 
     function editBook(bookId) {
         window.location.href = '/edit?bookId=' + bookId;
+    }
+
+    function deleteBook(bookId){
+        window.location.href = '/delete?bookId= ' + bookId;
     }
 
     document.getElementById('searchInput').addEventListener('keypress', function(e) {

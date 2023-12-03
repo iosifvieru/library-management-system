@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, abort, fla
 import libraryitems, itemFactory
 import library as l
 import database, random
-import hashlib, user, string
+import hashlib, user, string, transaction
 
 app = Flask(__name__)
 app.secret_key = 'pione4'
@@ -17,6 +17,7 @@ listOfUsers = user.UserList()
 sql = """
         DELETE from session WHERE id >= 1
     """
+
 database.query(sql)
 
 # MAIN PAGE
@@ -73,6 +74,26 @@ def addBook():
         return redirect(url_for('addBook'))
 
 
+@app.route('/delete', methods=['GET'])
+def delete():
+        
+    book_id = int(request.args.get('bookId'))
+    # print(book_id)
+    
+    sql = f"""
+        DELETE FROM books where id='{book_id}'
+    """
+
+    database.query(sql)
+
+    l.LibraryController.updateBooks(library)
+
+    # print(library.print())
+
+    return redirect('/')
+
+
+
 @app.route('/editBook', methods=['POST'])
 def editBook():
     if not is_logged_in():
@@ -81,10 +102,11 @@ def editBook():
     if request.method == 'POST':
         book_id = request.form.get('bookId')
 
-        book_id = int(book_id)-1
+        book_id = int(book_id)
+        #  print(book_id)
 
         book = l.LibraryController.getBook(library, book_id)
-        print(book)
+        # print(book)
 
         title = request.form.get('bookTitle')
         author = request.form.get('bookAuthor')
@@ -92,12 +114,18 @@ def editBook():
         borrowedBy = request.form.get('borrowedBy')
         noPages = request.form.get('noPages')
 
+        quantity = request.form.get('quantity')
+
         sql = f"""
             UPDATE books SET author='{author}', title='{title}', publishDate='{publishDate}',
                             borrowedBy='{borrowedBy}', noPages='{noPages}' WHERE id = '{book.getId()}'
         """
         database.query(sql)
         
+        # print(quantity)
+
+        book.updateQuantity(quantity)
+
         # TO DO -> refresh object.
         book.refresh()
 
@@ -109,7 +137,7 @@ def edit():
         return redirect('login')
     
     if request.method == 'GET':
-        book_id = int(request.args.get('bookId')) - 1
+        book_id = int(request.args.get('bookId'))
         book = l.LibraryController.getBook(library, book_id)
 
         data = {
@@ -126,7 +154,7 @@ def sql_admin():
         sql = request.form.get('sqlInput')
         
         result = database.query(sql)
-        print(result)
+        # print(result)
         
         return redirect('sql')
     #return render_template('sql.html')
@@ -232,9 +260,18 @@ def login():
     
     borrowedBooks = list()
     # to do
-    for book in library.getBooks():
-        if book.getBorrowedBy() == session['user_id']:
-            borrowedBooks.append(book)
+    sql = f"""
+        SELECT book_id FROM borrowedBooks WHERE user_id = '{user[0]}'
+    """
+    result = database.query(sql)
+
+    for book in result:
+        #
+        libraryBook = l.LibraryController.getBook(library, book[0])
+        copy = libraryBook.createCopy()
+
+        borrowedBooks.append(copy)
+    
 
     tempUser = itemFactory.ItemFactory.createUser(id, first_name, last_name, city, phoneNo, email, birthDate, borrowedBooks, adminLevel, 
                                        university, specialization, year)
@@ -300,40 +337,32 @@ def profile():
 def return_book():
     data = request.get_json()
     book_id = data.get('bookId')
-    book_name = data.get('bookName')
-    author = data.get('author')
-    print(data)
-    book = l.LibraryController.getBook(library, int(book_id)-1)
-    print(book)
 
+    book = l.LibraryController.getBook(library, int(book_id))
+    
     # update user class
-    user = listOfUsers.getUser(book.getBorrowedBy())
-    user.returnBook(book)
+    user = listOfUsers.getUser(int(session['user_id']))
 
-    # update book
-    book.updateStatus(-1, book_id)
-
+    for test in user.displayCurrentBooks():
+        if test.getId() == int(book_id):
+            user.returnBook(test)
+    
+    book.refresh()
     return redirect('profile')
 
 @app.route('/borrow', methods=['POST'])
 def borrow_book():
     if not is_logged_in():
         return redirect('login')
-    
+
     data = request.get_json()
     book_id = data.get('bookId')
-    book_name = data.get('bookName')
-    author = data.get('author')
-    # print(data)
 
-    book = l.LibraryController.getBook(library, int(book_id)-1)
-    # print(book)
-    # update user
+    book = l.LibraryController.getBook(library, int(book_id))
     user = listOfUsers.getUser(session['user_id'])
-    user.borrowBook(book)
 
-    # update book
-    book.updateStatus(session['user_id'], book_id)
+    transaction.Transaction.borrowBook(book, user)
+    book.refresh()
     return redirect('/')
 
 

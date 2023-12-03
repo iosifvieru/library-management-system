@@ -16,6 +16,8 @@ class Library:
         
         return tempList
         
+    def removeBook(self, id: int):
+        self.items.pop(id-1)
 
 class LibraryController:
     __last_id = 1
@@ -52,12 +54,18 @@ class LibraryController:
             if id not in existing_books:
                 LibraryController.addBook(library, tempBook)
 
-    def getBook(library: Library, id=0, name=None)-> libraryitems.Book:
-        #return library.getBooks()[id]
-        if name:
-            for book in library.getBooks():
-                if book.getTitle() == name:
-                    return book
+    def getBook(library: Library, id: int)-> libraryitems.Book:
+        # print(id)
+        for book in library.getBooks():
+            if book.getId() == id:
+                # print(book.getId())
+                return book
         
         return library.getBooks()[id]
     
+    def deleteBook(library: Library, id:int):
+        book = LibraryController.getBook(library, id)
+
+        library.removeBook(book.id)
+
+

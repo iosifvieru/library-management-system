@@ -1,6 +1,6 @@
 import datetime
 from abc import ABC, abstractmethod
-
+import transaction
 
 class User(ABC):
     @abstractmethod
@@ -35,7 +35,10 @@ class BaseUser(User):
 
     def returnBook(self, book):
         id = self.borrowBooks.index(book)
+        # print(id)
         self.borrowBooks.pop(id)
+
+        transaction.Transaction.returnBook(book, self)
 
     def displayCurrentBooks(self):
         return self.borrowBooks

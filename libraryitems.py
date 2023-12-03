@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import datetime, database
+import datetime, database, itemFactory
 
 
 class LibraryItem(ABC):
@@ -22,6 +22,36 @@ class Book(LibraryItem):
         self.publishDate = publishDate
         self.borrowedBy = borrowedBy
         self.noPages = noPages
+        self.quantity = 0
+        # quantity
+
+        sql = f"""
+            SELECT quantity from book_quantities WHERE id = '{self.id}'
+        """
+
+        result = database.query(sql)
+        if result:
+            result = result[0]
+            self.quantity = result[0]
+
+        # print(self.quantity)
+
+    def updateQuantity(self, quantity: int):
+        sql = f"""
+            SELECT quantity FROM book_quantities WHERE id = '{self.id}'
+        """
+        result = database.query(sql)
+
+        if not result:
+            sql = f"""
+                INSERT INTO book_quantities (id, quantity) VALUES ('{self.id}', '{quantity}')
+            """
+            result = database.query(sql)
+
+        sql = f"""
+            UPDATE book_quantities SET quantity='{quantity}' WHERE id = '{self.id}'
+        """
+        database.query(sql)
 
     def display(self):
         borrowed = "neimprumutat"
@@ -48,6 +78,15 @@ class Book(LibraryItem):
 
         database.query(sql)
 
+    def getQuantity(self):
+        sql = f"""
+            SELECT quantity FROM book_quantities WHERE id='{self.id}'
+        """
+        quantity = database.query(sql)
+        quantity = quantity[0][0]
+
+        return quantity
+
     def refresh(self):
 
         sql = f"""
@@ -56,9 +95,6 @@ class Book(LibraryItem):
         result = database.query(sql)
         result = result[0]
 
-        print('from db: ')
-        print(result)
-
         self.id = result[0]
         self.author = result[1]
         self.name = result[2]
@@ -66,11 +102,26 @@ class Book(LibraryItem):
         self.borrowedBy = result[5]
         self.noPages = result[6]
 
+        # quantity refresh
+        sql = f"""
+            SELECT quantity from book_quantities where id = '{self.id}'
+
+        """
+        result = database.query(sql)
+        result = result[0]
+
+        self.quantity = result[0]
+
         # TO DO: 
         #date = result[4]
         #parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d')
         #if self.publishDate != parsed_date:
         #    self.publishDate = parsed_date
+
+    def createCopy(self):
+        object = itemFactory.ItemFactory.createItem("book", self.id, self.author, self.name, self.status, self.publishDate,
+                                                    self.borrowedBy, self.noPages)
+        return object
 
     def __str__(self):
         return self.display()
