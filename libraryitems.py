@@ -12,11 +12,10 @@ class LibraryItem(ABC):
         pass
 
 
-# 
-# status si borrowedBy -> deprecated.
-# au ramas in scriere doar pt. ca trb. rescris aproape tot libraryitems.py pt a le elimina.
-# momentan status si borrowedby impreuna cu procedurile updateStatus si display nu sunt folosite.
-#
+
+# self.status -> deprecated
+
+# borrowedBy -> deprecated, va fi folosit ca foreign key pentru libraryID. din libraries
 
 class Book(LibraryItem):
     def __init__(self, id: int, author: str, name: str,
@@ -29,7 +28,23 @@ class Book(LibraryItem):
         self.borrowedBy = borrowedBy
         self.noPages = noPages
         self.quantity = 0
+
+        self.libraryID = borrowedBy
+        
+        sql = f"""
+            SELECT name from libraries WHERE libraryID = '{self.libraryID}'
+        """
+        result = database.query(sql)
+
+        if result:
+            result = result[0]
+            self.libraryName = result[0]
+            
+            # print(self.libraryName)
+            
         # quantity
+
+
 
         sql = f"""
             SELECT quantity from book_quantities WHERE id = '{self.id}'
@@ -108,6 +123,8 @@ class Book(LibraryItem):
         self.borrowedBy = result[5]
         self.noPages = result[6]
 
+        self.setLibraryID(self.borrowedBy)
+
         # quantity refresh
         sql = f"""
             SELECT quantity from book_quantities where id = '{self.id}'
@@ -152,3 +169,12 @@ class Book(LibraryItem):
     
     def setAuthor(self, author):
         self.author = author
+
+    def setLibraryID(self, id):
+        self.libraryID = id
+
+    def getLibraryID(self):
+        return self.libraryID
+    
+    def getLibraryName(self):
+        return self.libraryName

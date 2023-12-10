@@ -17,8 +17,16 @@ listOfUsers = user.UserList()
 sql = """
         DELETE from session WHERE id >= 1
     """
-
 database.query(sql)
+
+
+# get libraries
+sql = """
+    SELECT libraryID, name from libraries where libraryID >= 0
+"""
+
+libraries = database.query(sql)
+# print(libraries)
 
 # MAIN PAGE
 @app.route('/', methods=['GET','POST']) 
@@ -47,19 +55,32 @@ def mainPage():
     return render_template('index.html', **data)
 
 # ADMIN
+@app.route('/libraries')
+def getLibraries():
+    data = {
+        'library': libraries
+
+    }
+    return render_template('libraries.html', **data)
+
+
 @app.route('/addBook', methods=['POST', 'GET'])
 def addBook():
     if request.method == 'GET':
-        return render_template('addBook.html')
+
+        return render_template('addBook.html', libraries=libraries)
     else:
         item_type = request.form.get('item_type')
         author = request.form.get('author')
         title = request.form.get('title')
         date = datetime.datetime(day=1, month=11, year=int(request.form.get('date')))
         noPages = int(request.form.get('noPages'))
+
+        lib = request.form.get('library')
+
         sql = f"""
             INSERT INTO books (author, title, status, publishDate, borrowedBy, noPages)
-            VALUES ('{author}', '{title}', '{False}', '{date}', '{-1}', {noPages});
+            VALUES ('{author}', '{title}', '{False}', '{date}', '{lib}', {noPages});
         """
         database.query(sql)
 

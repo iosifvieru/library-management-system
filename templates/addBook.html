@@ -15,10 +15,18 @@
         <div class="center-div">
             <h1>Add Library Item</h1>
             <form method="POST" action="{{ url_for('addBook') }}">
-                <label>Select Item Type:</label>
+                <label>Item Type:</label>
                 <select name="item_type" id="item_type">
                     <option value="book">Book</option>
                     
+                    <!-- Viitoare dezvoltari. -->
+                </select>
+
+                <label>Select Library: </label>
+                <select name="library" id="library">
+                    {% for library in libraries %}
+                        <option value="{{library[0]}}">{{library[1]}}</option>
+                    {% endfor %}
                     <!-- Viitoare dezvoltari. -->
                 </select>
 

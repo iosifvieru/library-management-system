@@ -24,6 +24,7 @@
     
     {% if adminLevel %}
     <a href="{{ url_for('addBook')}}">Add book</a>
+    <a href="{{ url_for('getLibraries')}}">Libraries</a>
     {% endif %}
     
     <a href="{{ url_for('logout')}}">Logout</a>
@@ -36,6 +37,7 @@
             <th>Book Name</th>
             <th>Publish Date</th>
             <th>Number of pages</th>
+            <th>Library</th>
             <th>Quantity</th>
             <th>Action</th>
         </tr>
@@ -46,6 +48,7 @@
                 <td>{{book.name}}</td>
                 <td>{{book.publishDate.year}}</td>
                 <td>{{book.noPages}}</td>
+                <td>{{book.getLibraryName()}}</td>
                 <td>
                     {% if book.quantity > 0 %}
                         {{book.quantity}}
