@@ -64,6 +64,56 @@ def getLibraries():
     return render_template('libraries.html', **data)
 
 
+@app.route('/deleteLibrary')
+def deleteLibrary():
+    book_id = int(request.args.get('bookId'))
+
+    sql = f"""
+        DELETE FROM libraries WHERE libraryID = '{book_id}'
+    """
+
+    database.query(sql)
+    updateLib()
+    return redirect('/libraries')
+
+@app.route('/addLibrary', methods=['POST', 'GET'])
+def addLibrary():
+    
+    if request.method == 'GET':
+        return render_template("addLibrary.html")
+    
+    name = request.form.get('name')
+
+    sql = f"""
+        INSERT INTO libraries (name) VALUES ('{name}')
+    """
+    database.query(sql)
+
+    # update lib
+    updateLib()
+
+    return redirect('/libraries')
+
+@app.route('/editLibrary', methods=['POST', 'GET'])
+def editLibrary():
+    if request.method == 'GET':
+        id = int(request.args.get('bookId'))
+        return render_template('editLibrary.html', bookId=id)
+    
+    if request.method == 'POST':
+
+        id = request.form.get('bookId')
+        name = request.form.get('name')
+        print(name)
+        sql = f"""
+            UPDATE libraries SET name = '{name}' WHERE libraryID = '{id}'
+        """
+        database.query(sql)
+
+        updateLib()
+        return redirect('/libraries')
+
+
 @app.route('/addBook', methods=['POST', 'GET'])
 def addBook():
     if request.method == 'GET':
@@ -400,6 +450,14 @@ def encode_string(string: str):
     hash.update(string.encode())
     encoded_pass = hash.hexdigest()
     return encoded_pass
+
+def updateLib():
+    global libraries
+    sql = """
+        SELECT libraryID, name from libraries where libraryID >= 0
+    """
+
+    libraries = database.query(sql)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
