@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+</body>
+
+    <br><br><br>
+    <a href="{{ url_for('mainPage')}}">Index</a>
+    <a href="{{ url_for('addLibrary')}}">Add library</a>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        {% for lib in library %}
+        <tr>
+            <td>{{lib[1]}}</td>
+            <td>
+                <button onclick="deleteLibrary('{{ lib[0] }}')">Delete</button>
+            </td>
+            <td>
+                <button onclick="editLibrary('{{ lib[0] }}')">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script>
+        function deleteLibrary(bookId){
+            window.location.href = '/deleteLibrary?bookId=' + bookId;
+        }
+
+        function editLibrary(bookId){
+            window.location.href = '/editLibrary?bookId=' + bookId;
+        }
+    </script>
+</html>

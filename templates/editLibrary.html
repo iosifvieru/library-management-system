@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+</body>
+    <div class="parent-containter">
+        <div class="center-div">
+            <h1>Add library</h1>
+            <form method="POST" action="{{ url_for('editLibrary') }}">
+                <input type="hidden" name="bookId" value="{{ bookId }}">
+                <label for="name">Name:</label>
+                <input type="text" name="name" required>
+                <br>
+                <button type="submit">Submit</button>
+            </form> 
+        </div>
+    </div>
+</html>

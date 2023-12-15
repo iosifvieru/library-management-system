@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="parent-containter">
+        <div class="center-div">
+            <h1>Edit book</h1>
+            <form method="POST" action="{{ url_for('editBook') }}">
+                <input type="hidden" name="bookId" value="{{ book.id }}">
+                <label for="bookTitle">Book Title</label>
+                <input name="bookTitle" type="text" value="{{book.name}}">
+                <br>
+                <label for="bookAuthor">Author</label>
+                <input name="bookAuthor" type="text" value="{{book.author}}">
+                <br>
+                <label for="publishDate">Publish Date</label>
+                <input name="publishDate" type="text" value="{{book.publishDate}}">
+                <br>
+                <label for="borrowedBy">Borrowed By</label>
+                <input name="borrowedBy" type="number" value="{{book.borrowedBy}}">
+                <br>
+                <label for="noPages">Number of pages</label>
+                <input name="noPages" type="numeric" value="{{book.noPages}}">
+                <br>
+                <label for="quantity">Quantity</label>
+                <input name="quantity" type="numeric" value="{{book.quantity}}">
+                <br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
