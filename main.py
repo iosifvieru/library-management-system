@@ -11,7 +11,6 @@ app = Flask(__name__)
 app.secret_key = 'pione4'
 app.config['SESSION_PERMANENT'] = False
 
-
 library = l.Library()
 l.LibraryController.updateBooks(library)
 
@@ -21,7 +20,6 @@ sql = """
         DELETE from session WHERE id >= 1
     """
 database.query(sql)
-
 
 # get libraries
 sql = """
@@ -282,9 +280,14 @@ def login():
     password = request.form.get('password')
 
     
-    sql = f""" SELECT * FROM users WHERE username= '{username}'
-        """
-    result = database.query(sql)
+    #sql = f""" SELECT * FROM users WHERE username= '{username}'
+    #    """
+    #result = database.query(sql)
+    
+    sql = "SELECT * FROM users WHERE username = ?"
+
+    params = (username, )
+    result = database.query(sql, params)
 
     # restul = null inseamna ca nu s-a gasit utilizatorul in baza de date.
     if not result:
@@ -474,6 +477,7 @@ def getSessionID(id: int):
         return int(session_id[0][0])
     return None
 
+
 # random salt generator.
 def generatePasswordKey():
     salt = ""
@@ -481,8 +485,6 @@ def generatePasswordKey():
         integer = np.random.randint(33, 126)
         salt += chr(integer)
     return salt
-
-
 
 # la parola utilizatorului se adauga un string generat random.
 # exemplu:
@@ -496,6 +498,7 @@ def encode_string(string: str):
     encoded_pass = hash.hexdigest()
 
     return encoded_pass
+
 
 def updateLib():
     global libraries

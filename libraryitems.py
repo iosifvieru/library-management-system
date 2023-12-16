@@ -11,8 +11,6 @@ class LibraryItem(ABC):
     def updateStatus(self):
         pass
 
-
-
 # self.status -> deprecated
 
 # borrowedBy -> deprecated, va fi folosit ca foreign key pentru libraryID. din libraries
@@ -43,9 +41,6 @@ class Book(LibraryItem):
             # print(self.libraryName)
             
         # quantity
-
-
-
         sql = f"""
             SELECT quantity from book_quantities WHERE id = '{self.id}'
         """

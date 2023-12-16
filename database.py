@@ -15,13 +15,22 @@ def closeConnection(db):
     db.close()
 
 
-def query(sql):
-    db = getDB()
-    cursor = db.cursor()
+def query(sql, params=None):
+    try:
+        db = getDB()
+        cursor = db.cursor()
 
-    result = cursor.execute(sql)
-    result = result.fetchall()
-    
-    db.commit()
-    closeConnection(db)
-    return result
+        if params:
+            result = cursor.execute(sql, params)
+        else:
+            result = cursor.execute(sql)
+        
+        result = result.fetchall()
+        
+        db.commit()
+        closeConnection(db)
+        return result
+    except Exception as e:
+        print(f"DB ERROR: {e}")
+    finally:
+        closeConnection(db)

@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-</body>
-
     <br><br><br>
     <a href="{{ url_for('mainPage')}}">Index</a>
     <a href="{{ url_for('addLibrary')}}">Add library</a>
@@ -39,4 +36,5 @@
             window.location.href = '/editLibrary?bookId=' + bookId;
         }
     </script>
+    </body>
 </html>
