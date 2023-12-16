@@ -5,9 +5,12 @@ import library as l
 import database, random
 import hashlib, user, string, transaction
 
+import numpy as np
+
 app = Flask(__name__)
 app.secret_key = 'pione4'
 app.config['SESSION_PERMANENT'] = False
+
 
 library = l.Library()
 l.LibraryController.updateBooks(library)
@@ -48,6 +51,8 @@ def mainPage():
 
         books = tempList
             
+        
+
     data = {
         'books': books,
         'adminLevel': session['adminLevel']
@@ -234,6 +239,10 @@ def register():
 
         parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d')
 
+        salt = generatePasswordKey()
+
+        password += salt
+
         encoded_password = encode_string(password)
         sql = f"""
             INSERT INTO users (username, password, email, firstName, lastName, 
@@ -242,7 +251,19 @@ def register():
                     '{lastName}', '{city}', '{phoneNo}', '{parsed_date}')"""
 
         database.query(sql)
-        
+
+        sql = f"""
+            SELECT id FROM users WHERE username='{username}'
+        """ 
+        id = database.query(sql)
+        id = id[0][0]
+
+        sql = f"""
+            INSERT INTO pass_salt (id, salt) VALUES ('{id}', '{salt}')
+        """
+
+        database.query(sql)
+
         return redirect('/')
     
 
@@ -259,7 +280,7 @@ def login():
     # adica logica de login propriu-zisa.
     username = request.form.get('username')
     password = request.form.get('password')
-    encoded_password = encode_string(password)
+
     
     sql = f""" SELECT * FROM users WHERE username= '{username}'
         """
@@ -272,6 +293,18 @@ def login():
     # ia primul set de date returnat de query.
     user = result[0]
     
+    # extrage salt din DB
+    id = user[0]
+    sql = f"""
+        SELECT salt from pass_salt WHERE id = '{id}'
+    """
+    salt = database.query(sql)
+    
+    # append pe parola userului
+    pass_to_encode = password + salt[0][0]
+    
+    encoded_password = encode_string(pass_to_encode)
+
     # daca parola != de parola din db -> redirect catre login.
     if user[2] != encoded_password:
         return redirect('login')
@@ -441,14 +474,27 @@ def getSessionID(id: int):
         return int(session_id[0][0])
     return None
 
+# random salt generator.
+def generatePasswordKey():
+    salt = ""
+    for i in range (0, 16):
+        integer = np.random.randint(33, 126)
+        salt += chr(integer)
+    return salt
 
+
+
+# la parola utilizatorului se adauga un string generat random.
+# exemplu:
+# parola utilizatorului: test
+# key generat random: 1#$89232978@
+# parola care va fi hashuita in DB: test1#$89232978@
+# 1#$89232978@ se va stoca in db pentru logare.
 def encode_string(string: str):
-    key = "testkey"
-    string += key
-
     hash = hashlib.sha256()
     hash.update(string.encode())
     encoded_pass = hash.hexdigest()
+
     return encoded_pass
 
 def updateLib():
@@ -459,6 +505,8 @@ def updateLib():
 
     libraries = database.query(sql)
 
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
