@@ -71,11 +71,9 @@ def getLibraries():
 def deleteLibrary():
     book_id = int(request.args.get('bookId'))
 
-    sql = f"""
-        DELETE FROM libraries WHERE libraryID = '{book_id}'
-    """
-
-    database.query(sql)
+    sql = " DELETE FROM libraries WHERE libraryID = ?"
+    params = (book_id, )
+    database.query(sql, params)
     updateLib()
     return redirect('/libraries')
 
@@ -285,7 +283,6 @@ def login():
     #result = database.query(sql)
     
     sql = "SELECT * FROM users WHERE username = ?"
-
     params = (username, )
     result = database.query(sql, params)
 
@@ -298,10 +295,13 @@ def login():
     
     # extrage salt din DB
     id = user[0]
-    sql = f"""
-        SELECT salt from pass_salt WHERE id = '{id}'
-    """
-    salt = database.query(sql)
+    #sql = f"""
+    #    SELECT salt from pass_salt WHERE id = '{id}'
+    #"""
+
+    sql = "SELECT salt FROM pass_salt WHERE id = ?"
+    params = (id, )
+    salt = database.query(sql, params)
     
     # append pe parola userului
     pass_to_encode = password + salt[0][0]
@@ -350,10 +350,13 @@ def login():
     
     borrowedBooks = list()
     # to do
-    sql = f"""
-        SELECT book_id FROM borrowedBooks WHERE user_id = '{user[0]}'
-    """
-    result = database.query(sql)
+    #sql = f"""
+    #    SELECT book_id FROM borrowedBooks WHERE user_id = '{user[0]}'
+    #"""
+
+    sql = "SELECT book_id FROM borrowedBooks WHERE user_id = ?"
+    params = (user[0], )
+    result = database.query(sql, params)
 
     for book in result:
         #
@@ -460,18 +463,22 @@ def before_request():
 
 
 def deleteSession(id: int):
-    sql = f"""
-        DELETE from session WHERE id = '{id}'
-    """
-    database.query(sql)
+    #sql = f"""
+    #    DELETE from session WHERE id = '{id}'
+    #"""
+    sql = "DELETE FROM session WHERE id = ?"
+    params = (id, )
+    database.query(sql, params)
     return None
 
 
 def getSessionID(id: int):
-    sql = f"""
-        SELECT session_id from session WHERE id = '{id}'
-    """
-    session_id = database.query(sql)
+    #sql = f"""
+    #    SELECT session_id from session WHERE id = '{id}'
+    #"""
+    sql = "SELECT session_id FROM session WHERE id = ?"
+    params = (id, )
+    session_id = database.query(sql, params)
 
     if session_id:
         return int(session_id[0][0])
@@ -487,7 +494,7 @@ def generatePasswordKey():
     return salt
 
 # la parola utilizatorului se adauga un string generat random.
-# exemplu:
+# exemplu: 
 # parola utilizatorului: test
 # key generat random: 1#$89232978@
 # parola care va fi hashuita in DB: test1#$89232978@

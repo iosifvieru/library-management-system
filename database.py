@@ -1,5 +1,6 @@
 
 import sqlite3
+import traceback
 
 __PATH = 'database/library.db'
 #__PATH = 'database\library.db'
@@ -31,6 +32,6 @@ def query(sql, params=None):
         closeConnection(db)
         return result
     except Exception as e:
-        print(f"DB ERROR: {e}")
+        traceback.print_exc()
     finally:
         closeConnection(db)

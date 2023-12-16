@@ -28,11 +28,14 @@ class Book(LibraryItem):
         self.quantity = 0
 
         self.libraryID = borrowedBy
-        
-        sql = f"""
-            SELECT name from libraries WHERE libraryID = '{self.libraryID}'
-        """
-        result = database.query(sql)
+        self.libraryName = None
+
+        #sql = f"""
+        #    SELECT name from libraries WHERE libraryID = '{self.libraryID}'
+        #"""
+        sql = "SELECT name FROM libraries WHERE libraryID = ?"
+        params = (self.libraryID, )
+        result = database.query(sql, params)
 
         if result:
             result = result[0]
@@ -41,11 +44,13 @@ class Book(LibraryItem):
             # print(self.libraryName)
             
         # quantity
-        sql = f"""
-            SELECT quantity from book_quantities WHERE id = '{self.id}'
-        """
+        #sql = f"""
+        #    SELECT quantity from book_quantities WHERE id = '{self.id}'
+        #"""
+        sql = "SELECT quantity FROM book_quantities WHERE id = ?"
+        params = (self.id ,)
+        result = database.query(sql, params)
 
-        result = database.query(sql)
         if result:
             result = result[0]
             self.quantity = result[0]
@@ -53,21 +58,27 @@ class Book(LibraryItem):
         # print(self.quantity)
 
     def updateQuantity(self, quantity: int):
-        sql = f"""
-            SELECT quantity FROM book_quantities WHERE id = '{self.id}'
-        """
-        result = database.query(sql)
+        #sql = f"""
+        #    SELECT quantity FROM book_quantities WHERE id = '{self.id}'
+        #"""
+        sql = "SELECT quantity FROM book_quantities WHERE id = ?"
+        params = (self.id, )
+        result = database.query(sql, params)
 
         if not result:
-            sql = f"""
-                INSERT INTO book_quantities (id, quantity) VALUES ('{self.id}', '{quantity}')
-            """
-            result = database.query(sql)
+            #sql = f"""
+            #    INSERT INTO book_quantities (id, quantity) VALUES ('{self.id}', '{quantity}')
+            #"""
+            sql = "INSERT INTO book_quantities (id, quantity) VALUES (?, ?)"
+            params = (self.id, quantity, )
+            result = database.query(sql, params)
 
-        sql = f"""
-            UPDATE book_quantities SET quantity='{quantity}' WHERE id = '{self.id}'
-        """
-        database.query(sql)
+        #sql = f"""
+        #    UPDATE book_quantities SET quantity='{quantity}' WHERE id = '{self.id}'
+        #"""
+        sql = "UPDATE book_quantities SET quantity = ? WHERE id = ?"
+        params = (quantity, self.id, )
+        database.query(sql, params)
 
     def display(self):
         borrowed = "neimprumutat"
@@ -95,20 +106,24 @@ class Book(LibraryItem):
         database.query(sql)
 
     def getQuantity(self):
-        sql = f"""
-            SELECT quantity FROM book_quantities WHERE id='{self.id}'
-        """
-        quantity = database.query(sql)
+        #sql = f"""
+        #    SELECT quantity FROM book_quantities WHERE id='{self.id}'
+        #"""
+        sql = "SELECT quantity FROM book_quantities WHERE id = ?"
+        params = (self.id, )
+        quantity = database.query(sql, params)
         quantity = quantity[0][0]
 
         return quantity
 
     def refresh(self):
 
-        sql = f"""
-            SELECT * FROM books where id = '{self.id}'
-        """
-        result = database.query(sql)
+        #sql = f"""
+        #    SELECT * FROM books where id = '{self.id}'
+        #"""
+        sql = "SELECT * FROM books WHERE id = ?"
+        params = (self.id, )
+        result = database.query(sql, params)
         result = result[0]
 
         self.id = result[0]
@@ -121,11 +136,14 @@ class Book(LibraryItem):
         self.setLibraryID(self.borrowedBy)
 
         # quantity refresh
-        sql = f"""
-            SELECT quantity from book_quantities where id = '{self.id}'
+        #sql = f"""
+        #    SELECT quantity from book_quantities where id = '{self.id}'
+        #"""
 
-        """
-        result = database.query(sql)
+        sql = "SELECT quantity FROM book_quantities WHERE id = ?"
+        params = (self.id, )
+
+        result = database.query(sql, params)
         result = result[0]
 
         self.quantity = result[0]
@@ -172,4 +190,7 @@ class Book(LibraryItem):
         return self.libraryID
     
     def getLibraryName(self):
+        if not self.libraryName:
+            return "None"
+
         return self.libraryName
