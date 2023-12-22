@@ -1,21 +1,23 @@
 import datetime
-from flask import Flask, render_template, request, redirect, url_for, abort, flash, session
-import libraryitems, itemFactory
+from flask import Flask, render_template, request, redirect, url_for, session
+import itemFactory
 import library as l
 import database, random
-import hashlib, user, string, transaction
-
+import hashlib, user, transaction
 import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'pione4'
 app.config['SESSION_PERMANENT'] = False
 
+# initializare lista de carti + citire din DB
 library = l.Library()
 l.LibraryController.updateBooks(library)
 
+# initializare lista de utilizatori
 listOfUsers = user.UserList()
 
+# resetare a sesiunilor la pornirea serverului
 sql = """
         DELETE from session WHERE id >= 1
     """
@@ -25,7 +27,6 @@ database.query(sql)
 sql = """
     SELECT libraryID, name from libraries where libraryID >= 0
 """
-
 libraries = database.query(sql)
 # print(libraries)
 
@@ -49,8 +50,6 @@ def mainPage():
 
         books = tempList
             
-        
-
     data = {
         'books': books,
         'adminLevel': session['adminLevel']
@@ -200,21 +199,6 @@ def edit():
         }
         return render_template('editBook.html', **data)
 
-
-@app.route('/sql', methods=['POST', 'GET'])
-def sql_admin():
-    if request.method == 'GET':
-        return render_template('sql.html')
-    else:
-        sql = request.form.get('sqlInput')
-        
-        result = database.query(sql)
-        # print(result)
-        
-        return redirect('sql')
-    #return render_template('sql.html')
-
-
 # LOGIN REGISTER SYSTEM
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -359,15 +343,14 @@ def login():
     result = database.query(sql, params)
 
     for book in result:
-        #
-        libraryBook = l.LibraryController.getBook(library, book[0])
+        book_id = book[0]
+        libraryBook = l.LibraryController.getBook(library, book_id)
         copy = libraryBook.createCopy()
 
         borrowedBooks.append(copy)
     
     tempUser = itemFactory.ItemFactory.createUser(id, first_name, last_name, city, phoneNo, email, birthDate, borrowedBooks, adminLevel, 
                                        university, specialization, year)
-
     listOfUsers.addUser(tempUser)
 
 
@@ -514,7 +497,6 @@ def updateLib():
     """
 
     libraries = database.query(sql)
-
 
 
 # Press the green button in the gutter to run the script.
