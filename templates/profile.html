@@ -9,7 +9,9 @@
 </head>
 
 <body>
-    <a href ="{{ url_for('mainPage')}}">Index</a>
+    {% extends 'header.html' %}
+
+    {% block content %}
     <div class="parent-containter">
         <div class="center-div">
             <h1>Profile</h1>
@@ -54,6 +56,6 @@
     }
 
 </script>
-
+{%endblock%}
 
 </html>

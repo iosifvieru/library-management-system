@@ -11,6 +11,8 @@
     </style>
 </head>
 <body>
+    {% extends 'header.html' %}
+    {% block content %}
     <div class="parent-containter">
         <div class="center-div">
             <h1>Add Library Item</h1>
@@ -50,5 +52,6 @@
             </form>
         </div>
     </div>
+    {%endblock%}
 </body>
 </html>

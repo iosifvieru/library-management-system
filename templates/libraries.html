@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% extends 'header.html' %}
+    {% block content %}
+
     <br><br><br>
-    <a href="{{ url_for('mainPage')}}">Index</a>
     <a href="{{ url_for('addLibrary')}}">Add library</a>
     <table>
         <tr>
@@ -38,3 +40,4 @@
     </script>
     </body>
 </html>
+{%endblock%}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="cssmenu">
+    <ul>
+        <li><h1 style="margin-right: 10px;">Library</h1></li>
+        <li><a href="{{url_for('mainPage')}}">Home</a></li>
+        <li><a href="{{url_for('profile')}}">Profile</a></li>
+        {% if adminLevel %}
+        <li><a href="{{url_for('addBook')}}">Add book</a></li>
+        <li><a href="{{url_for('getLibraries')}}">Libraries</a></li>
+        {% endif %}
+        <li><a href="{{url_for('logout')}}">Logout</a></li>
+        <li>
+            <form id="searchForm" action="{{ url_for('mainPage') }}" method="post">
+                <div class="search-container">
+                    <input class="search" type="text" placeholder="Search..." name="search_input">
+                </div>
+            </form>
+        </li>
+    </ul>
+    <hr>
+    {%block content%}
+
+    {%endblock%}
+</div>
+
+</body>
+</html>
