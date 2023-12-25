@@ -9,35 +9,48 @@
 </head>
 
 <body>
+    <a href ="{{ url_for('mainPage')}}">Index</a>
+    <div class="parent-containter">
+        <div class="center-div">
+            <h1>Profile</h1>
+            <p>Name: {{ user.firstName }} {{ user.lastName }} </p>
+            <p>City: {{ user.city }} </p>
+            <p>Phone no: {{ user.phoneNo }}</p>
+            <p>Email: {{ user.email }} </p>
+            <p>Date: {{ user.birthDate.day }}-{{ user.birthDate.month }}-{{ user.birthDate.year }}</p>
+            {% if books %}
+                <button style="font-size: 10px;" onclick="toggleTable()"><span class="toggle-icon">&#9660;</span></button>
+                <table id="bookTable">
+                    <tr>
+                        <th>Author</th>
+                        <th>Book Title</th>
+                    </tr>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{book.author}}</td>
+                        <td>{{book.name}}</td>
+                        <td><button type="submit" onclick="returnBook('{{ book.id }}')">Return</button></td>
+                    </tr>
+                    {% endfor %}
+            {%endif%}
+                </table>
+        </div>
+    </div>
 
-    <h1>Profile</h1>
-    <p> {{ user.id }}</p> <br>
-    <p> {{ user.firstName }} {{ user.lastName }} </p>
-    <p> {{ user.city }} </p>
-    <p> {{ user.phoneNo }}</p>
-    <p> {{ user.email }} </p>
-    <p> {{ user.birthDate.day }}-{{ user.birthDate.month }}-{{ user.birthDate.year }}</p>
-    {% if books %}
-        <p>BorrowedBooks: </p>
-        <table>
-            <tr>
-                <th>Author</th>
-                <th>Book Title</th>
-            </tr>
-            {% for book in books %}
-            <tr>
-                <td>{{book.author}}</td>
-                <td>{{book.name}}</td>
-                <td><button type="submit" onclick="returnBook('{{ book.id }}')">Return</button></td>
-            </tr>
-            {% endfor %}
-    {%endif%}
-        </table>
 </body>
 
 <script>
-       function returnBook(bookId) {
+
+    function returnBook(bookId) {
         window.location.href = '/return?bookId=' + bookId;
+    }
+
+    function toggleTable(){
+        var table = document.getElementById("bookTable");
+        table.style.display = (table.style.display === "none" || table.style.display === "") ? "table" : "none";
+        
+        var toggleControl = document.querySelector(".toggle-control");
+        toggleControl.classList.toggle("collapsed");
     }
 
 </script>

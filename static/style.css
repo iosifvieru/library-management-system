@@ -51,14 +51,20 @@ h1 {
 }
 
 a {
-    color: #3498db; /* Default text color */
+    display: inline-block;
     text-decoration: none; /* Remove underline */
-    transition: color 0.3s ease; /* Smooth transition for color change */
-  }
+    color: #3498db; /* Set link color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: 2px solid #3498db; /* Set border properties */
+    border-radius: 5px; /* Add rounded corners */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Smooth transition */
+    margin-right: 10px; /* Adjust margin as needed */
+}
   
   /* Hover Effect */
   a:hover {
-    color: #e74c3c; /* Change text color on hover */
+    background-color: #3498db;
+    color: #fff; /* Change text color on hover */
   }
   
   /* Visited Link Style */
@@ -138,18 +144,10 @@ select option:hover {
     color: #fff;
 }
 
-.search-icon {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
 
 .search-container {
-    position: relative;
-    margin: 20px;
     max-width: 400px;
+    margin-left: 10px;
 }
 
 .search {
@@ -161,97 +159,7 @@ select option:hover {
     width: 60%;
 }
 
-
-#menu {
-	background: #263D42;
-	color: #FFF;
-	height: 71px;
-	padding-left: 18px;
-	border-radius: 0px;
-}
-#menu ul, #menu li {
-	margin: 0 auto;
-	padding: 0;
-	list-style: none
-}
-#menu ul {
-	width: 100%;
-}
-#menu li {
-	float: left;
-	display: inline;
-	position: relative;
-}
-#menu a {
-	display: block;
-	line-height: 71px;
-	padding: 0 14px;
-	text-decoration: none;
-	color: #CCDBDC;
-	font-size: 18px;
-}
-#menu a.dropdown-arrow:after {
-	content: "\25BE";
-	margin-left: 5px;
-}
-#menu li a:hover {
-	color: #80CED7;
-	background: #263D42;
-}
-#menu input {
-	display: none;
-	margin: 0;
-	padding: 0;
-	height: 71px;
-	width: 100%;
-	opacity: 0;
-	cursor: pointer
-}
-#menu label {
-	display: none;
-	line-height: 71px;
-	text-align: center;
-	position: absolute;
-	left: 35px
-}
-#menu label:before {
-	font-size: 1.6em;
-	content: "\2261"; 
-	margin-left: 20px;
-}
-#menu ul.sub-menus{
-	height: auto;
-	overflow: hidden;
-	width: 170px;
-	background: #263D42;
-	position: absolute;
-	z-index: 99;
-	display: none;
-}
-#menu ul.sub-menus li {
-	display: block;
-	width: 100%;
-}
-#menu ul.sub-menus a {
-	color: #CCDBDC;
-	font-size: 16px;
-}
-#menu li:hover ul.sub-menus {
-	display: block
-}
-#menu ul.sub-menus a:hover{
-	background: #263D42;
-	color: #80CED7;
-}
-@media screen and (max-width: 800px){
-	#menu {position:relative}
-	#menu ul {background:#111;position:absolute;top:100%;right:0;left:0;z-index:3;height:auto;display:none}
-	#menu ul.sub-menus {width:100%;position:static;}
-	#menu ul.sub-menus a {padding-left:30px;}
-	#menu li {display:block;float:none;width:auto;}
-	#menu input, #menu label {position:absolute;top:0;left:0;display:block}
-	#menu input {z-index:4}
-	#menu input:checked + label {color:white}
-	#menu input:checked + label:before {content:"\00d7"}
-	#menu input:checked ~ ul {display:block}
+p {
+    margin: 10px 0; /* Adjust margin as needed */
+    line-height: 1.5; /* Adjust line height as needed */
 }

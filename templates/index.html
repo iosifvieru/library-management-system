@@ -12,25 +12,23 @@
 
     <div class="parent-containter">
         <div class="center-div">
-            <h1>Books</h1>
+            <h1>Books</h1><br><br>
+
+            <a href="{{ url_for('profile') }}">Profile</a>
+            
+            {% if adminLevel %}
+            <a href="{{ url_for('addBook')}}">Add book</a>
+            <a href="{{ url_for('getLibraries')}}">Libraries</a>
+            {% endif %}
+            
+            <a href="{{ url_for('logout')}}">Logout</a>
         </div>
     </div>
-
     <form id="searchForm" action="{{ url_for('mainPage') }}" method="post">
         <div class="search-container">
             <input class="search" type="text" placeholder="Search..." name="search_input">
         </div>
     </form>
-    
-    <a href="{{ url_for('profile') }}">Profile</a>
-    
-    {% if adminLevel %}
-    <a href="{{ url_for('addBook')}}">Add book</a>
-    <a href="{{ url_for('getLibraries')}}">Libraries</a>
-    {% endif %}
-    
-    <a href="{{ url_for('logout')}}">Logout</a>
-
     <table>
         <tr>
             <!-- <th>ID</th> -->
